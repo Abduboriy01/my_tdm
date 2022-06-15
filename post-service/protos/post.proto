@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package user;
+
+service PostService {
+    rpc CreatePost(Post) returns (Post);
+    rpc GetUserPosts(GetByUserIdRequest) returns (GetUserPostsResponse);
+}
+
+message GetUserPosts {
+    repeated Post posts = 1;
+}
+
+message GetUserPostsResponse {
+    repeated Post posts = 1;
+}
+
+message GetByUserIdRequest {
+    string user_id = 1;
+}
+
+message Post {
+    string id = 1;
+    string name = 2;
+    string description = 3;
+    string user_id = 4;
+    repeated Media medias = 5;
+}
+
+message Media {
+    string id = 1;
+    string type = 2;
+    string link = 3;
+}
