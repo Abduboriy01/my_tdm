@@ -1,12 +1,11 @@
 package postgres
 
 import (
-	// "strings"
-	// "testing/quick"
 
-	pb "github.com/abduboriykhalid/my_tdm/post-service/genproto"
+
 	"github.com/gofrs/uuid"
 	"github.com/jmoiron/sqlx"
+	pb "github.com/my_tdm/post-service/genproto"
 )
 
 type postRepo struct {
@@ -23,7 +22,13 @@ func (r *postRepo) CreatePost(post *pb.Post) (*pb.Post, error) {
 		rPost = pb.Post{}
 	)
 
-	err := r.db.QueryRow("INSERT INTO posts (id, name, description, user_id) VALUES($1, $2, $3, $4) RETURNING id, name, description, user_id", post.Id, post.Name, post.Description, post.UserId).Scan(
+	postid, err := uuid.NewV4()
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = r.db.QueryRow("INSERT INTO posts (id, name, description, user_id) VALUES($1, $2, $3, $4) RETURNING id, name, description, user_id", postid, post.Name, post.Description, post.UserId).Scan(
 		&rPost.Id,
 		&rPost.Name,
 		&rPost.Description,
@@ -31,18 +36,27 @@ func (r *postRepo) CreatePost(post *pb.Post) (*pb.Post, error) {
 	)
 	if err != nil {
 		return &pb.Post{}, err
+
 	}
 
 	for _, media := range post.Medias {
 		id, err := uuid.NewV4()
+		var mediaa pb.Media
 		if err != nil {
 			return nil, err
 		}
-		_, err = r.db.Exec("INSERT INTO post_medias (id, type, link, post_id) VALUES($1, $2, $3, $4)", id, media.Type, media.Link, post.Id)
+		err = r.db.QueryRow("INSERT INTO post_medias (id, type, link, post_id) VALUES($1, $2, $3, $4) RETURNING id,type,link,post_id", id, media.Type, media.Link, postid).Scan(
+			&mediaa.Id,
+			&mediaa.Type,
+			&mediaa.Link,
+			&mediaa.PostId,
+		)
 		if err != nil {
 			return &pb.Post{}, err
 		}
+		rPost.Medias = append(rPost.Medias, &mediaa)
 	}
+
 
 	return &rPost, nil
 }
@@ -71,15 +85,15 @@ func (r *postRepo) GetUserPosts(userID string) ([]*pb.Post, error) {
 			return nil, err
 		}
 
-		mQuery := `SELECT id, link, type, FROM post_medias WHERE post_id = $1`
-		rows, err := r.db.Query(mQuery, post.Id)
+		mQuery := `SELECT id, link, type FROM post_medias WHERE post_id = $1`
+		row, err := r.db.Query(mQuery, post.Id)
 		if err != nil {
 			return nil, err
 		}
 
-		for rows.Next() {
+		for row.Next() {
 			var media pb.Media
-			err = rows.Scan(
+			err = row.Scan(
 				&media.Id,
 				&media.Link,
 				&media.Type,
@@ -93,4 +107,18 @@ func (r *postRepo) GetUserPosts(userID string) ([]*pb.Post, error) {
 		posts = append(posts, &post)
 	}
 	return posts, nil
+}
+
+func (r *postRepo) CreatePostUser(user *pb.User) error {
+
+	err := r.db.QueryRow("INSERT INTO post_users (id, first_name, last_name) VALUES($1, $2, $3) ", user.Id, user.FirstName, user.LastName).Scan(
+		&user.Id,
+		&user.FirstName,
+		&user.LastName,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

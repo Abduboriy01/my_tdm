@@ -1,9 +1,9 @@
 package storage
 
 import (
-	"github.com/abduboriykhalid/my_tdm/user-service-shu/storage/postgres"
-	"github.com/abduboriykhalid/my_tdm/user-service-shu/storage/repo"
 	"github.com/jmoiron/sqlx"
+	"github.com/my_tdm/user-service-shu/storage/postgres"
+	"github.com/my_tdm/user-service-shu/storage/repo"
 )
 
 //IStorage ...

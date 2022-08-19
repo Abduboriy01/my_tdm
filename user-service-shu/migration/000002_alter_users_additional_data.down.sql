@@ -1,0 +1,3 @@
+ALTER TABLE users DROP COLUMN IF EXISTS bio;
+ALTER TABLE users ALTER COLUMN first_name TYPE varchar(255);
+ALTER TABLE users ALTER COLUMN last_name TYPE varchar(255);

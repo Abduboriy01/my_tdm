@@ -3,11 +3,12 @@ package main
 import (
 	"net"
 
-	"github.com/abduboriykhalid/my_tdm/post-service/config"
-	pb "github.com/abduboriykhalid/my_tdm/post-service/genproto"
-	"github.com/abduboriykhalid/my_tdm/post-service/pkg/db"
-	"github.com/abduboriykhalid/my_tdm/post-service/pkg/logger"
-	"github.com/abduboriykhalid/my_tdm/post-service/service"
+	"github.com/my_tdm/post-service/config"
+	events "github.com/my_tdm/post-service/events"
+	pb "github.com/my_tdm/post-service/genproto"
+	"github.com/my_tdm/post-service/pkg/db"
+	"github.com/my_tdm/post-service/pkg/logger"
+	"github.com/my_tdm/post-service/service"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -27,6 +28,9 @@ func main() {
 	if err != nil {
 		log.Fatal("sqlx connection to postgres error", logger.Error(err))
 	}
+
+	postUserCreateTopic := events.NewKafkaConsumer(connDB, &cfg, log, "user.user")
+	go postUserCreateTopic.Start()
 
 	postService := service.NewPostService(connDB, log)
 

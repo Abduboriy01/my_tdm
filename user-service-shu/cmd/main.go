@@ -2,13 +2,16 @@ package main
 
 import (
 	"net"
+	//	"string"
 
-	"github.com/abduboriykhalid/my_tdm/user-service-shu/config"
-	pb "github.com/abduboriykhalid/my_tdm/user-service-shu/genproto"
-	"github.com/abduboriykhalid/my_tdm/user-service-shu/pkg/db"
-	"github.com/abduboriykhalid/my_tdm/user-service-shu/pkg/logger"
-	"github.com/abduboriykhalid/my_tdm/user-service-shu/service"
-	grpcClient "github.com/abduboriykhalid/my_tdm/user-service-shu/service/grpc_client"
+	"github.com/my_tdm/user-service-shu/config"
+	"github.com/my_tdm/user-service-shu/events"
+	pb "github.com/my_tdm/user-service-shu/genproto"
+	"github.com/my_tdm/user-service-shu/pkg/db"
+	"github.com/my_tdm/user-service-shu/pkg/logger"
+	messegebroker "github.com/my_tdm/user-service-shu/pkg/messagebroker"
+	"github.com/my_tdm/user-service-shu/service"
+	grpcClient "github.com/my_tdm/user-service-shu/service/grpc_client"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -35,7 +38,20 @@ func main() {
 		return
 	}
 
-	userService := service.NewUserService(connDB, log, grpcC)
+	// KAFKA
+	publishersMap := make(map[string]messegebroker.Publisher)
+	userTopicPublisher := events.NewKafkaProducerBroker(cfg, log, "user.user")
+	defer func() {
+		err := userTopicPublisher.Stop()
+		if err != nil {
+			log.Error("filed to stop kafka producer", logger.Error(err))
+		}
+	}()
+
+	publishersMap["user"] = userTopicPublisher
+	//KAFKA END
+
+	userService := service.NewUserService(connDB, log, grpcC, publishersMap)
 
 	lis, err := net.Listen("tcp", cfg.RPCPort)
 	if err != nil {

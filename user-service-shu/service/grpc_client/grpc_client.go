@@ -3,8 +3,8 @@ package grpcClient
 import (
 	"fmt"
 
-	"github.com/abduboriykhalid/my_tdm/user-service-shu/config"
-	pb "github.com/abduboriykhalid/my_tdm/user-service-shu/genproto"
+	"github.com/my_tdm/user-service-shu/config"
+	pb "github.com/my_tdm/user-service-shu/genproto"
 	"google.golang.org/grpc"
 )
 

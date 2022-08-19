@@ -31,4 +31,5 @@ message Media {
     string id = 1;
     string type = 2;
     string link = 3;
+    string post_id=4;
 }

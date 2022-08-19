@@ -3,8 +3,8 @@ package services
 import (
 	"fmt"
 
-	"github.com/rustagram/api-gateway/config"
-	pb "github.com/rustagram/api-gateway/genproto"
+	"github.com/my_tdm/api-gateway/config"
+	pb "github.com/my_tdm/api-gateway/genproto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/resolver"
@@ -25,7 +25,7 @@ func (s *serviceManager) UserService() pb.UserServiceClient {
 func NewServiceManager(conf *config.Config) (IServiceManager, error) {
 	resolver.SetDefaultScheme("dns")
 
-	connUser, err := grpc.Dial(	
+	connUser, err := grpc.Dial(
 		fmt.Sprintf("%s:%d", conf.UserServiceHost, conf.UserServicePort),
 		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {

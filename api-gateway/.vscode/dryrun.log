@@ -1,6 +1,5 @@
 make --dry-run --always-make --keep-going --print-directory
-make: Entering directory '/home/user/projects/go/src/github.com/api-gateway'
- 
-CGO_ENABLED=0 GOOS=darwin go build -mod=vendor -a -installsuffix cgo -o /home/user/projects/go/src/github.com/api-gateway/bin/template ./cmd/main.go
-make: Leaving directory '/home/user/projects/go/src/github.com/api-gateway'
+make: Entering directory '/home/user/go/src/github.com/my_tdm/api-gateway'
+CGO_ENABLED=0 GOOS=darwin go build -mod=vendor -a -installsuffix cgo -o /home/user/go/src/github.com/my_tdm/api-gateway/bin/template ./cmd/main.go
+make: Leaving directory '/home/user/go/src/github.com/my_tdm/api-gateway'
  

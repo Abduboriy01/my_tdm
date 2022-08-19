@@ -1,0 +1,189 @@
+definitions:
+  v1.CreateUserRequestBody:
+    properties:
+      first_name:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+      posts:
+        items:
+          $ref: '#/definitions/v1.Post'
+        type: array
+    type: object
+  v1.Emailver:
+    properties:
+      Code:
+        type: string
+      Email:
+        type: string
+    type: object
+  v1.Media:
+    properties:
+      id:
+        type: string
+      link:
+        type: string
+      type:
+        type: string
+    type: object
+  v1.Post:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      medias:
+        items:
+          $ref: '#/definitions/v1.Media'
+        type: array
+      name:
+        type: string
+      user_id:
+        type: string
+    type: object
+  v1.RegisterUserAuthReqBody:
+    properties:
+      Code:
+        type: string
+      Email:
+        type: string
+      FirstName:
+        description: Id          string `protobuf:"bytes,1,opt,name=Id,proto3" json:"Id"`
+        type: string
+      Password:
+        type: string
+      PhoneNumber:
+        type: string
+      Username:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /v1/users:
+    get:
+      consumes:
+      - application/json
+      description: This api is using for getting user list
+      parameters:
+      - description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - description: page
+        in: query
+        name: page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Get user list summary
+      tags:
+      - user
+    post:
+      consumes:
+      - application/json
+      description: This api is using for creating new user
+      parameters:
+      - description: user body
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/v1.CreateUserRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Create user summary
+      tags:
+      - user
+  /v1/users/{id}:
+    get:
+      consumes:
+      - application/json
+      description: This api is using for getting user by id
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Get user summary
+      tags:
+      - user
+  /v1/users/login/{email}/{password}:
+    get:
+      consumes:
+      - application/json
+      description: This api using for logging registered user
+      parameters:
+      - description: Email
+        in: path
+        name: email
+        required: true
+        type: string
+      - description: Password
+        in: path
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      tags:
+      - user
+  /v1/users/register:
+    post:
+      consumes:
+      - application/json
+      description: This api is using for registering user
+      parameters:
+      - description: user_body
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/v1.RegisterUserAuthReqBody'
+      produces:
+      - application/json
+      responses: {}
+      summary: Register user summary
+      tags:
+      - user
+  /v1/users/verfication:
+    post:
+      consumes:
+      - application/json
+      description: This api using for verifying registered user
+      parameters:
+      - description: user body
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/v1.Emailver'
+      produces:
+      - application/json
+      responses: {}
+      tags:
+      - user
+swagger: "2.0"

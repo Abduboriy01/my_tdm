@@ -2,9 +2,10 @@ package db
 
 import (
 	"fmt"
-	"github.com/abduboriykhalid/my_tdm/post-service/config"
+
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq" //postgres drivers
+	"github.com/my_tdm/post-service/config"
 )
 
 func ConnectToDB(cfg config.Config) (*sqlx.DB, error) {
